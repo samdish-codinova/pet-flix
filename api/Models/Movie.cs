@@ -18,8 +18,8 @@ namespace Models
 
         public DateTime ReleaseDate { get; set; }
 
-        // [Column(TypeName = "decimal(18, 2)")]
-        // public decimal RentalPrice { get; set; }
+        [Column(TypeName = "decimal(18, 2)")]
+        public decimal RentalPrice { get; set; }
 
     }
 }
