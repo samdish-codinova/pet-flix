@@ -1,0 +1,96 @@
+# Ignore build output directories
+bin/
+obj/
+out/
+
+# User-specific files
+*.user
+*.rsuser
+*.suo
+*.userosscache
+*.userprefs
+
+# Log files
+*.log
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+desktop.ini
+
+# IDE-specific files
+# Visual Studio
+.vscode/
+.vs/
+*.ncrunchproject
+*.ncrunchsolution
+*.ntvs_analysis.dat
+*.nvuser
+*.sln.docstates
+*.cache
+
+# Rider
+.idea/
+
+# Packaging
+*.nupkg
+*.snupkg
+
+# .NET Core-specific files
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# NuGet
+*.nuget.props
+*.nuget.targets
+packages/
+!packages/*.mdf
+!packages/*.ldf
+*.nupkg
+*.snupkg
+.nuget/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Database files
+*.mdf
+*.ldf
+
+# Configuration
+appsettings.*.json
+secrets.json
+
+# Code Coverage
+TestResults/
+*.coverage
+*.coveragexml
+*.trx
+
+# Resharper
+_ReSharper.Caches/
+
+# Other
+*.tsscache
+*.ide
+*.ide-shm
+*.ide-wal
+
+# Publish outputs
+publish/
+wwwroot/
+
+# Lock files
+lockfile.lock
+
+# Global Assembly Cache
+*.dll
+*.exe
+
+# Swagger files (optional, if generated at runtime)
+swagger-ui/
+swagger.json
