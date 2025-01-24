@@ -15,5 +15,6 @@ namespace DataAccessLayer.Data
         }
 
         public DbSet<Movie> Movie { get; set; }
+        public DbSet<User> User  { get; set; }
     }
 }
