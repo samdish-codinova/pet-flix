@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BusinessLogicLayer;
 using DataAccessLayer.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,72 +10,83 @@ using Models;
 
 namespace Controllers
 {
-    public class CreateMovieBody
-    {
-        public string Title;
-        public decimal Price;
-    }
     [ApiController]
     [Route("api/[controller]")]
     public class MovieController : ControllerBase
     {
-        private readonly ApplicationDBContext _dbContext;
-        public MovieController(ApplicationDBContext dBContext)
+        private readonly IMovieService _movieService;
+        public MovieController(IMovieService movieService)
         {
-            _dbContext = dBContext;
-        }
-
-        [HttpGet]
-        public async Task<List<Movie>> Get()
-        {
-            return await _dbContext.Movie.ToListAsync();
-        }
-
-        [HttpGet("{id}")]
-        public async Task<Movie> GetById(int id)
-        {
-            return await _dbContext.Movie.FirstOrDefaultAsync(movie => movie.Id == id);
+            _movieService = movieService;
         }
 
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] Movie movie)
         {
-            if (string.IsNullOrEmpty(movie.Title) || string.IsNullOrEmpty(movie.Description) || string.IsNullOrEmpty(movie.Genre))
+            try
             {
-                return BadRequest("Invalid Request");
+                var savedMovie = await _movieService.CreateMovieAsync(movie);
+
+                return CreatedAtAction(nameof(GetById), new { Id = movie.Id }, movie);
+            }
+            catch (InvalidData)
+            {
+                return BadRequest("Invalid request to create movie");
             }
 
-            await _dbContext.Movie.AddAsync(movie);
-            await _dbContext.SaveChangesAsync();
+        }
 
-            return CreatedAtAction(nameof(GetById), new { Id = movie.Id }, movie);
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Movie>> GetById(int id)
+        {
+            var movie = await _movieService.GetMovieByIdAsync(id);
+            if (movie is null)
+            {
+                return NotFound();
+            }
+
+            return movie;
+        }
+
+        [HttpGet]
+        public async Task<List<Movie>> Get()
+        {
+            return await _movieService.GetAllMoviesAsync();
         }
 
         [HttpPut]
         public async Task<ActionResult> Update([FromBody] Movie movie)
         {
-            if (movie.Id == 0 || string.IsNullOrEmpty(movie.Title) || string.IsNullOrEmpty(movie.Description) || string.IsNullOrEmpty(movie.Genre))
+            try
             {
-                return BadRequest("Invalid Request");
+                var isUpdated = await _movieService.UpdateMovieAsync(movie);
+
+                return Ok();
             }
-            _dbContext.Movie.Update(movie);
-
-            await _dbContext.SaveChangesAsync();
-
-            return Ok();
+            catch (InvalidData)
+            {
+                return BadRequest("Invalid request to update movie");
+            }
+            catch (MovieNotFound)
+            {
+                return NotFound("Movie does not exist.");
+            }
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id) {
-            var movie = await GetById(id);
-            if (movie is null) {
+        public async Task<ActionResult> Delete(int id)
+        {
+            try
+            {
+                var isDeleted = await _movieService.DeleteMovieAsync(id);
+
+                return Ok();
+            }
+            catch (MovieNotFound)
+            {
                 return NotFound();
             }
 
-            _dbContext.Movie.Remove(movie);
-            await _dbContext.SaveChangesAsync();
-
-            return Ok();
         }
     }
 }

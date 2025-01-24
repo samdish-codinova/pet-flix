@@ -1,19 +1,25 @@
+using BusinessLogicLayer;
 using DataAccessLayer.Data;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+// Add services to the container
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<ApplicationDBContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnection")));
+// Add DbContext
+builder.Services.AddDbContext<ApplicationDBContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnection")));
+
+// Register Service Layer
+builder.Services.AddScoped<IMovieService, MovieService>();
+
 builder.Services.AddControllers();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -21,9 +27,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseRouting();
-// app.UseAuthorization();
-app.MapControllers();
-
 app.UseHttpsRedirection();
+
+app.MapControllers();
 
 app.Run();
