@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data;
+using DataAccessLayer.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Models;
@@ -39,8 +39,6 @@ namespace Controllers
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] Movie movie)
         {
-            Console.WriteLine("movie data: {0}", movie.Title);
-
             if (string.IsNullOrEmpty(movie.Title) || string.IsNullOrEmpty(movie.Description) || string.IsNullOrEmpty(movie.Genre))
             {
                 return BadRequest("Invalid Request");

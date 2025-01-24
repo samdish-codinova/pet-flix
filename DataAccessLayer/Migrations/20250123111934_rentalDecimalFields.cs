@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace api.Migrations
+namespace DataAccessLayer.Migrations
 {
     /// <inheritdoc />
     public partial class rentalDecimalFields : Migration
