@@ -16,6 +16,6 @@ namespace Models
 
         [Column(TypeName = "decimal(18, 2)")]
         public decimal RentalPrice { get; set; }
-
+        public int Stock { get; set; } = 0;
     }
 }
