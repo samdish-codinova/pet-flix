@@ -1,3 +1,4 @@
+using System.Net;
 using DataAccessLayer.Data;
 using Models;
 
@@ -16,7 +17,7 @@ namespace BusinessLogicLayer
     {
       if (string.IsNullOrEmpty(user.Name) || string.IsNullOrEmpty(user.Email) || string.IsNullOrEmpty(user.PasswordHash))
       {
-        throw new InvalidData();
+        throw new ErrorResponseException("Invalid data.", HttpStatusCode.NotFound);
       }
 
       await _dbContext.User.AddAsync(user);

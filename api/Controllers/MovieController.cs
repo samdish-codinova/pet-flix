@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Net;
 using BusinessLogicLayer;
-using DataAccessLayer.Data;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Models;
 
 namespace Controllers
@@ -23,17 +18,9 @@ namespace Controllers
         [HttpPost]
         public async Task<ActionResult> Create([FromBody] Movie movie)
         {
-            try
-            {
-                var savedMovie = await _movieService.CreateMovieAsync(movie);
+            var savedMovie = await _movieService.CreateMovieAsync(movie);
 
-                return CreatedAtAction(nameof(GetById), new { Id = movie.Id }, movie);
-            }
-            catch (InvalidData)
-            {
-                return BadRequest("Invalid request to create movie");
-            }
-
+            return CreatedAtAction(nameof(GetById), new { Id = movie.Id }, movie);
         }
 
         [HttpGet("{id}")]
@@ -42,7 +29,7 @@ namespace Controllers
             var movie = await _movieService.GetMovieByIdAsync(id);
             if (movie is null)
             {
-                return NotFound();
+                return NotFound(new { status = HttpStatusCode.NotFound, message = $"Movie not found for the given id \"id\"" });
             }
 
             return movie;
@@ -57,36 +44,17 @@ namespace Controllers
         [HttpPut]
         public async Task<ActionResult> Update([FromBody] Movie movie)
         {
-            try
-            {
-                var isUpdated = await _movieService.UpdateMovieAsync(movie);
+            await _movieService.UpdateMovieAsync(movie);
 
-                return Ok();
-            }
-            catch (InvalidData)
-            {
-                return BadRequest("Invalid request to update movie");
-            }
-            catch (MovieNotFound)
-            {
-                return NotFound("Movie does not exist.");
-            }
+            return Ok(movie);
         }
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> Delete(int id)
         {
-            try
-            {
-                var isDeleted = await _movieService.DeleteMovieAsync(id);
+            await _movieService.DeleteMovieAsync(id);
 
-                return Ok();
-            }
-            catch (MovieNotFound)
-            {
-                return NotFound();
-            }
-
+            return Ok(new { status = HttpStatusCode.OK, message = "Movie has been deleted." });
         }
     }
 }

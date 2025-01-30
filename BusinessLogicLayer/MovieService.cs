@@ -1,3 +1,4 @@
+using System.Net;
 using BusinessLogicLayer;
 using DataAccessLayer.Data;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ namespace BusinessLogicLayer
     {
       if (string.IsNullOrEmpty(movie.Title) || string.IsNullOrEmpty(movie.Description) || string.IsNullOrEmpty(movie.Genre))
       {
-        throw new InvalidData();
+        throw new ErrorResponseException("Invalid data provided to create a movie.", HttpStatusCode.BadRequest);
       }
 
       await _dbContext.Movie.AddAsync(movie);
@@ -42,12 +43,12 @@ namespace BusinessLogicLayer
 
       if (movie.Id == 0 || string.IsNullOrEmpty(movie.Title) || string.IsNullOrEmpty(movie.Description) || string.IsNullOrEmpty(movie.Genre))
       {
-        throw new InvalidData();
+        throw new ErrorResponseException("Invalid data provided to update the movie.", HttpStatusCode.BadRequest);
       }
       var movieInDb = await _dbContext.Movie.FirstOrDefaultAsync(m => m.Id == movie.Id);
       if (movieInDb is null)
       {
-        throw new MovieNotFound();
+        throw new ErrorResponseException($"Movie not found for the given id \"{movie.Id}\"", HttpStatusCode.NotFound);
       }
 
       _dbContext.Movie.Update(movie);
@@ -60,7 +61,7 @@ namespace BusinessLogicLayer
       var movie = await GetMovieByIdAsync(id);
       if (movie is null)
       {
-        throw new MovieNotFound();
+        throw new ErrorResponseException($"Movie not found for the given id \"{id}\"", HttpStatusCode.NotFound);
       }
 
       _dbContext.Movie.Remove(movie);

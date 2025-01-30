@@ -1,5 +1,5 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Security.Authentication;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using DataAccessLayer.Data;
@@ -25,17 +25,23 @@ namespace BusinessLogicLayer
 
     public async Task<User> RegisterUser(RegisterUserRequestDTO userData)
     {
-      PasswordHasher.CreatePasswordHash(userData.Password, out byte[] passwordSalt, out byte[] passwordHash);
+      if (userData.Password.Length == 0)
+      {
+        throw new ErrorResponseException("Password can not be empty.", HttpStatusCode.BadRequest);
+      }
+
       if (string.IsNullOrEmpty(userData.Name) || string.IsNullOrEmpty(userData.Email))
       {
-        throw new InvalidData();
+        throw new ErrorResponseException("Invalid name or email specified.", HttpStatusCode.BadRequest);
       }
 
       var userInDb = await _dbContext.User.FirstOrDefaultAsync(user => user.Email.ToLower() == userData.Email.Trim().ToLower());
       if (userInDb != null)
       {
-        throw new ArgumentException("User with email already exists.");
+        throw new ErrorResponseException($"User with email  \"{userData.Email}\" already exists.", HttpStatusCode.BadRequest);
       }
+
+      PasswordHasher.CreatePasswordHash(userData.Password, out byte[] passwordSalt, out byte[] passwordHash);
 
       var user = new User()
       {
@@ -51,7 +57,7 @@ namespace BusinessLogicLayer
       int savedChanges = await _dbContext.SaveChangesAsync();
       if (savedChanges == 0)
       {
-        throw new ApplicationException("Could not save changes to the DB.");
+        throw new ErrorResponseException("Could not save data. Something went wrong.", HttpStatusCode.InternalServerError);
       }
 
       return user;
@@ -61,21 +67,21 @@ namespace BusinessLogicLayer
     {
       if (string.IsNullOrEmpty(creds.Email) || creds.Password == null)
       {
-        throw new InvalidData();
+        throw new ErrorResponseException("Invalid email or password specified.", HttpStatusCode.BadRequest);
       }
 
       var user = await _dbContext.User.FirstOrDefaultAsync(user => user.Email.Trim().ToLower() == creds.Email.Trim().ToLower());
 
       if (user is null)
       {
-        throw new AuthenticationException();
+        throw new ErrorResponseException("Incorrect email or password provided", HttpStatusCode.Unauthorized);
       }
 
       var passwordMatched = PasswordHasher.VerifyPasswordHash(creds.Password, Convert.FromBase64String(user.PasswordSalt), Convert.FromBase64String(user.PasswordHash));
 
       if (!passwordMatched)
       {
-        throw new AuthenticationException();
+        throw new ErrorResponseException("Incorrect email or password provided", HttpStatusCode.Unauthorized);
       }
 
       string jwt = GenerateJwt(user);

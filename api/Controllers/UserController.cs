@@ -1,3 +1,4 @@
+using System.Net;
 using BusinessLogicLayer;
 using Microsoft.AspNetCore.Mvc;
 using Models;
@@ -17,16 +18,9 @@ namespace Controllers
     [HttpPost]
     public async Task<ActionResult<User>> Create(User user)
     {
-      try
-      {
-        var userInDb = await _userService.CreateUserAsync(user);
+      var userInDb = await _userService.CreateUserAsync(user);
 
-        return userInDb;
-      }
-      catch (InvalidData)
-      {
-        return BadRequest("Invalid user data.");
-      }
+      return userInDb;
     }
   }
 
