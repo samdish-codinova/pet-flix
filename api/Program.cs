@@ -1,6 +1,7 @@
 using BusinessLogicLayer;
 using DataAccessLayer.Data;
 using Microsoft.EntityFrameworkCore;
+using Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddControllers();
 
 var app = builder.Build();
+
+// Middlewares
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 // Configure the HTTP request pipeline
 if (app.Environment.IsDevelopment())
