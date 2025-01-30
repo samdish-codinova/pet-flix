@@ -6,7 +6,7 @@ using Models;
 
 namespace BusinessLogicLayer
 {
-  public class MovieService : IMovieService
+  public class MovieService : IMoviesService
   {
     private ApplicationDBContext _dbContext;
 

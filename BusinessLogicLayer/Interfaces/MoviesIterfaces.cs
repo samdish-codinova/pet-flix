@@ -2,7 +2,7 @@ using Models;
 
 namespace BusinessLogicLayer
 {
-    public interface IMovieService
+    public interface IMoviesService
     {
         Task<List<Movie>> GetAllMoviesAsync();
         Task<Movie> GetMovieByIdAsync(int id);

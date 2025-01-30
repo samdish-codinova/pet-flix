@@ -14,7 +14,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DbConnection")));
 
 // Register Service Layer
-builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IMoviesService, MovieService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 

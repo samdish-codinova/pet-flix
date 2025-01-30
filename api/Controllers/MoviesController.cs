@@ -7,10 +7,10 @@ namespace Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class MovieController : ControllerBase
+    public class MoviesController : ControllerBase
     {
-        private readonly IMovieService _movieService;
-        public MovieController(IMovieService movieService)
+        private readonly IMoviesService _movieService;
+        public MoviesController(IMoviesService movieService)
         {
             _movieService = movieService;
         }
