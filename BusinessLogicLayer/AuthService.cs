@@ -22,8 +22,8 @@ namespace BusinessLogicLayer
         throw new InvalidData();
       }
 
-      var userInDb = await _dbContext.User.FirstOrDefaultAsync(user => user.Email.ToLower() == userData.Name.Trim().ToLower());
-      if (userInDb is null) {
+      var userInDb = await _dbContext.User.FirstOrDefaultAsync(user => user.Email.ToLower() == userData.Email.Trim().ToLower());
+      if (userInDb != null) {
         throw new ArgumentException("User with email already exists.");
       }
 
