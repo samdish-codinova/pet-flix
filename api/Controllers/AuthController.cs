@@ -18,11 +18,25 @@ namespace Controllers
 
 
     [HttpPost("register")]
-    public async Task<ActionResult> Register([FromBody] RegisterUserRequestDTO userData)
+    public async Task<ActionResult<RegisterUserResponseDTO>> Register([FromBody] RegisterUserRequestDTO userData)
     {
       User user = await _authService.RegisterUser(userData);
+      string accessToken = _authService.GenerateJwt(user);
 
-      return Ok(new { id = user.Id, name = user.Name, email = user.Email, createdAt = user.CreatedAt });
+      Response.Headers.Append("x-access-token", accessToken);
+
+      return new RegisterUserResponseDTO()
+      {
+        User = new BaseUser()
+        {
+          Id = user.Id,
+          Name = user.Name,
+          Email = user.Email,
+          Role = user.Role,
+          CreatedAt = user.CreatedAt
+        },
+        AccessToken = accessToken
+      };
     }
 
     [HttpPost("login")]
@@ -30,7 +44,7 @@ namespace Controllers
     {
       LoginUserResponseDTO loginRes = await _authService.Login(creds);
 
-      Response.Headers.Append("x-auth-token", loginRes.AccessToken);
+      Response.Headers.Append("x-access-token", loginRes.AccessToken);
       return Ok(loginRes);
     }
   }

@@ -89,7 +89,7 @@ namespace BusinessLogicLayer
       return new LoginUserResponseDTO()
       {
         AccessToken = jwt,
-        User = new LoginUserDTO()
+        User = new BaseUser()
         {
           Id = user.Id,
           Name = user.Name,
@@ -101,7 +101,7 @@ namespace BusinessLogicLayer
       };
     }
 
-    private string GenerateJwt(User user)
+    public string GenerateJwt(User user)
     {
       var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
       var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha512);

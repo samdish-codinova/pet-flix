@@ -2,8 +2,10 @@ using Models;
 
 namespace BusinessLogicLayer
 {
-  public interface IAuthService {
+  public interface IAuthService
+  {
     Task<User> RegisterUser(RegisterUserRequestDTO userData);
     Task<LoginUserResponseDTO> Login(LoginUserRequestDTO creds);
+    string GenerateJwt(User user);
   }
 }
