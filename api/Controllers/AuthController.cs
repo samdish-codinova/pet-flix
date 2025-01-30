@@ -1,4 +1,4 @@
-using System.Resources;
+using System.Security.Authentication;
 using BusinessLogicLayer;
 using Microsoft.AspNetCore.Mvc;
 using Models;
@@ -34,12 +34,29 @@ namespace Controllers
         return BadRequest("User with email already exists.");
       }
 
-      if (user is null)
+      return Ok(new { id = user.Id, name = user.Name, email = user.Email, createdAt = user.CreatedAt });
+    }
+
+    [HttpPost("login")]
+    public async Task<ActionResult<LoginUserResponseDTO>> Login([FromBody] LoginUserRequestDTO creds)
+    {
+      LoginUserResponseDTO loginRes;
+      try
       {
-        throw new ApplicationException("User is null.");
+        loginRes = await _authService.Login(creds);
+      }
+      catch (InvalidData)
+      {
+        return BadRequest("Please provide email and password in correct format.");
+      }
+      catch (AuthenticationException)
+      {
+        return Unauthorized("Incorrect email or password");
       }
 
-      return Ok(new { id = user.Id, name = user.Name, email = user.Email, createdAt = user.CreatedAt });
+      Response.Headers.Append("x-auth-token", loginRes.AccessToken);
+
+      return Ok(loginRes);
     }
   }
 }
