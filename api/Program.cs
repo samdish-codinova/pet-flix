@@ -15,6 +15,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 // Register Service Layer
 builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 builder.Services.AddControllers();
 
