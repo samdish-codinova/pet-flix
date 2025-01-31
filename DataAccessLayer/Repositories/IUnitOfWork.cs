@@ -4,6 +4,7 @@ namespace DataAccessLayer.Repositories
   {
     IMovieRepository Movies { get; }
     IUserRepository Users { get; }
+    IRentalRepository Rentals { get; }
     int Complete();
   }
 }
