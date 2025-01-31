@@ -66,12 +66,22 @@ namespace Controllers
             return mappedMovies;
         }
 
-        [HttpPut]
-        public async Task<ActionResult> Update([FromBody] Movie movie)
+        [HttpPut("{id}")]
+        public async Task<ActionResult<MovieResponseDTO>> Update(int id, [FromBody] UpdateMovieRequestDTO movie)
         {
-            await _movieService.UpdateMovieAsync(movie);
+            await _movieService.UpdateMovieAsync(id, movie);
+            var updatedMovie = await _movieService.GetMovieByIdAsync(id);
 
-            return Ok(movie);
+            return Ok(new MovieResponseDTO()
+            {
+                Id = updatedMovie.Id,
+                Title = updatedMovie.Title,
+                Description = updatedMovie.Description,
+                Genre = updatedMovie.Genre,
+                ReleaseDate = updatedMovie.ReleaseDate,
+                RentalPrice = updatedMovie.RentalPrice,
+                Stock = updatedMovie.Stock
+            });
         }
 
         [HttpDelete("{id}")]

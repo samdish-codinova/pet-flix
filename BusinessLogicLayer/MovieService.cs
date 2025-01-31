@@ -50,21 +50,61 @@ namespace BusinessLogicLayer
       return _unitOfWork.Movies.GetAll().ToList();
     }
 
-    // TODO: Fix and refactor this method.
-    public async Task<int> UpdateMovieAsync(Movie movie)
+    public async Task<int> UpdateMovieAsync(int id, UpdateMovieRequestDTO movie)
     {
 
-      if (movie.Id == 0 || string.IsNullOrEmpty(movie.Title) || string.IsNullOrEmpty(movie.Description) || string.IsNullOrEmpty(movie.Genre))
+      if (id <= 0)
       {
         throw new ErrorResponseException("Invalid data provided to update the movie.", HttpStatusCode.BadRequest);
       }
-      var movieInDb = await _dbContext.Movie.FirstOrDefaultAsync(m => m.Id == movie.Id);
+      var movieInDb = _unitOfWork.Movies.Get(id);
       if (movieInDb is null)
       {
-        throw new ErrorResponseException($"Movie not found for the given id \"{movie.Id}\"", HttpStatusCode.NotFound);
+        throw new ErrorResponseException($"Movie not found for the given id \"{id}\"", HttpStatusCode.NotFound);
       }
 
-      _dbContext.Movie.Update(movie);
+      if (movie.Title != null)
+      {
+        if (string.IsNullOrWhiteSpace(movie.Title))
+        {
+          throw new ErrorResponseException("Please specify the correct title.", HttpStatusCode.BadRequest);
+        }
+        movieInDb.Title = movie.Title;
+      }
+
+      if (movie.Description != null)
+      {
+        if (string.IsNullOrWhiteSpace(movie.Description))
+        {
+          throw new ErrorResponseException("Please specify the correct description.", HttpStatusCode.BadRequest);
+        }
+        movieInDb.Description = movie.Description;
+      }
+
+      if (movie.Genre != null)
+      {
+        if (string.IsNullOrWhiteSpace(movie.Genre))
+        {
+          throw new ErrorResponseException("Please specify the correct genre.", HttpStatusCode.BadRequest);
+        }
+        movieInDb.Genre = movie.Genre;
+      }
+
+      if (movie.ReleaseDate != null)
+      {
+        movieInDb.ReleaseDate = (DateTime)movie.ReleaseDate;
+      }
+
+      if (movie.RentalPrice != null)
+      {
+        if (movie.RentalPrice <= 0)
+        {
+          throw new ErrorResponseException("Please specify a valid rental price.", HttpStatusCode.BadRequest);
+        }
+        movieInDb.RentalPrice = (decimal)movie.RentalPrice;
+      }
+
+      _dbContext.Movie.Update(movieInDb);
 
       return await _dbContext.SaveChangesAsync();
     }
