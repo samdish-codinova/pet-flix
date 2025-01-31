@@ -1,5 +1,6 @@
 using System.Net;
 using BusinessLogicLayer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models;
 
@@ -16,6 +17,7 @@ namespace Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<MovieResponseDTO>> Create([FromBody] CreateMovieRequestDTO movie)
         {
             var savedMovie = await _movieService.CreateMovieAsync(movie);
@@ -67,6 +69,7 @@ namespace Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<MovieResponseDTO>> Update(int id, [FromBody] UpdateMovieRequestDTO movie)
         {
             await _movieService.UpdateMovieAsync(id, movie);
@@ -85,6 +88,7 @@ namespace Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize( Roles = "Admin")]
         public async Task<ActionResult> Delete(int id)
         {
             await _movieService.DeleteMovieAsync(id);
