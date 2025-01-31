@@ -9,9 +9,11 @@ namespace DataAccessLayer.Repositories
     {
       _dbContext = dbContext;
       Movies = new MovieRepository(_dbContext);
+      Users = new UserRepository(_dbContext);
     }
 
     public IMovieRepository Movies { get; private set; }
+    public IUserRepository Users { get; private set; }
 
     public int Complete()
     {
