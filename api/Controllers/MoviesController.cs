@@ -16,15 +16,15 @@ namespace Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Create([FromBody] Movie movie)
+        public async Task<ActionResult<MovieResponseDTO>> Create([FromBody] CreateMovieRequestDTO movie)
         {
             var savedMovie = await _movieService.CreateMovieAsync(movie);
 
-            return CreatedAtAction(nameof(GetById), new { Id = movie.Id }, movie);
+            return CreatedAtAction(nameof(GetById), new { Id = savedMovie.Id }, savedMovie);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Movie>> GetById(int id)
+        public async Task<ActionResult<MovieResponseDTO>> GetById(int id)
         {
             var movie = await _movieService.GetMovieByIdAsync(id);
             if (movie is null)
@@ -32,13 +32,38 @@ namespace Controllers
                 return NotFound(new { status = HttpStatusCode.NotFound, message = $"Movie not found for the given id \"id\"" });
             }
 
-            return movie;
+            return new MovieResponseDTO()
+            {
+                Id = movie.Id,
+                Title = movie.Title,
+                Description = movie.Description,
+                Genre = movie.Genre,
+                ReleaseDate = movie.ReleaseDate,
+                RentalPrice = movie.RentalPrice,
+                Stock = movie.Stock
+            };
         }
 
         [HttpGet]
-        public async Task<List<Movie>> Get()
+        public async Task<List<MovieResponseDTO>> Get()
         {
-            return await _movieService.GetAllMoviesAsync();
+            var movies = await _movieService.GetAllMoviesAsync();
+
+            var mappedMovies = movies.Select(movie =>
+            {
+                return new MovieResponseDTO()
+                {
+                    Id = movie.Id,
+                    Title = movie.Title,
+                    Description = movie.Description,
+                    Genre = movie.Genre,
+                    ReleaseDate = movie.ReleaseDate,
+                    RentalPrice = movie.RentalPrice,
+                    Stock = movie.Stock
+                };
+            }).ToList();
+
+            return mappedMovies;
         }
 
         [HttpPut]

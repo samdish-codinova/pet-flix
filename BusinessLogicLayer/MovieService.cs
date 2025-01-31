@@ -17,17 +17,27 @@ namespace BusinessLogicLayer
       _unitOfWork = unitOfWork;
     }
 
-    public async Task<Movie> CreateMovieAsync(Movie movie)
+    public async Task<Movie> CreateMovieAsync(CreateMovieRequestDTO movie)
     {
       if (string.IsNullOrEmpty(movie.Title) || string.IsNullOrEmpty(movie.Description) || string.IsNullOrEmpty(movie.Genre))
       {
         throw new ErrorResponseException("Invalid data provided to create a movie.", HttpStatusCode.BadRequest);
       }
 
-      _unitOfWork.Movies.Add(movie);
+      var newMovie = new Movie()
+      {
+        Title = movie.Title,
+        Description = movie.Description,
+        Genre = movie.Genre,
+        ReleaseDate = movie.ReleaseDate,
+        RentalPrice = movie.RentalPrice,
+        Stock = movie.Stock
+      };
+
+      _unitOfWork.Movies.Add(newMovie);
       _unitOfWork.Complete();
 
-      return movie;
+      return newMovie;
     }
 
     public async Task<Movie> GetMovieByIdAsync(int id)
