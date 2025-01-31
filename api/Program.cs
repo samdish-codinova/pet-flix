@@ -1,5 +1,6 @@
 using BusinessLogicLayer;
 using DataAccessLayer.Data;
+using DataAccessLayer.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Middlewares;
 
@@ -17,6 +18,7 @@ builder.Services.AddDbContext<ApplicationDBContext>(options =>
 builder.Services.AddScoped<IMoviesService, MovieService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 
 builder.Services.AddControllers();
 

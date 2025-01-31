@@ -1,5 +1,6 @@
 using System.Net;
 using DataAccessLayer.Data;
+using DataAccessLayer.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Models;
 
@@ -8,10 +9,12 @@ namespace BusinessLogicLayer
   public class MovieService : IMoviesService
   {
     private ApplicationDBContext _dbContext;
+    private IUnitOfWork _unitOfWork;
 
-    public MovieService(ApplicationDBContext dBContext)
+    public MovieService(ApplicationDBContext dBContext, IUnitOfWork unitOfWork)
     {
       _dbContext = dBContext;
+      _unitOfWork = unitOfWork;
     }
 
     public async Task<Movie> CreateMovieAsync(Movie movie)
@@ -21,22 +24,23 @@ namespace BusinessLogicLayer
         throw new ErrorResponseException("Invalid data provided to create a movie.", HttpStatusCode.BadRequest);
       }
 
-      await _dbContext.Movie.AddAsync(movie);
-      await _dbContext.SaveChangesAsync();
+      _unitOfWork.Movies.Add(movie);
+      _unitOfWork.Complete();
 
       return movie;
     }
 
     public async Task<Movie> GetMovieByIdAsync(int id)
     {
-      return await _dbContext.Movie.FirstOrDefaultAsync(movie => movie.Id == id);
+      return _unitOfWork.Movies.Get(id);
     }
 
     public async Task<List<Movie>> GetAllMoviesAsync()
     {
-      return await _dbContext.Movie.ToListAsync();
+      return _unitOfWork.Movies.GetAll().ToList();
     }
 
+    // TODO: Fix and refactor this method.
     public async Task<int> UpdateMovieAsync(Movie movie)
     {
 
@@ -57,14 +61,14 @@ namespace BusinessLogicLayer
 
     public async Task<int> DeleteMovieAsync(int id)
     {
-      var movie = await GetMovieByIdAsync(id);
+      var movie = _unitOfWork.Movies.Get(id);
       if (movie is null)
       {
         throw new ErrorResponseException($"Movie not found for the given id \"{id}\"", HttpStatusCode.NotFound);
       }
 
-      _dbContext.Movie.Remove(movie);
-      return await _dbContext.SaveChangesAsync();
+      _unitOfWork.Movies.Remove(movie);
+      return _unitOfWork.Complete();
     }
   }
 }
