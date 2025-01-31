@@ -5,8 +5,13 @@ namespace DataAccessLayer.Repositories
 {
   public class MovieRepository : Repository<Movie>, IMovieRepository
   {
-    MovieRepository(ApplicationDBContext dbContext) : base(dbContext)
+    public MovieRepository(ApplicationDBContext dbContext) : base(dbContext)
     {
+    }
+
+    public ApplicationDBContext DbContext
+    {
+      get { return Context as ApplicationDBContext; }
     }
   }
 }
