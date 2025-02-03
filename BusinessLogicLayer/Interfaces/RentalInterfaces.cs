@@ -4,6 +4,8 @@ namespace BusinessLogicLayer
 {
   public interface IRentalService
   {
-    Task<List<Rental>> GetAllRentals();
+    Task<RentalResponseDTO> GetById(int id);
+    Task<List<RentalResponseDTO>> GetAllRentals();
+    Task<RentalResponseDTO> CreateRentalAsync(CreateRentalRequestDTO rentalRequestDto, int userId);
   }
 }

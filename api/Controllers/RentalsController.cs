@@ -6,7 +6,6 @@ using Models;
 namespace Controllers
 {
   [ApiController]
-  [Authorize(Roles = "Admin")]
   [Route("/api/[Controller]")]
   public class RentalsController : ControllerBase
   {
@@ -17,10 +16,27 @@ namespace Controllers
       _rentalService = rentalService;
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpGet]
-    public Task<List<Rental>> GetAll()
+    public Task<List<RentalResponseDTO>> GetAll()
     {
       return _rentalService.GetAllRentals();
+    }
+
+    [HttpGet("{id}")]
+    public Task<RentalResponseDTO> GetById(int id)
+    {
+      return _rentalService.GetById(id);
+    }
+
+    [HttpPost]
+    [Authorize]
+    public async Task<ActionResult> CreateRental(CreateRentalRequestDTO createRentalRequestDto)
+    {
+      var userId = User.FindFirst("id")?.Value;
+      var rental = await _rentalService.CreateRentalAsync(createRentalRequestDto, Convert.ToInt32(userId));
+
+      return CreatedAtAction(nameof(GetById), new { Id = rental.Id }, rental);
     }
   }
 }
